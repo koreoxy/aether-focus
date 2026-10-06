@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Aether-Focus</string>
+    <string name="guardian_service_name">Focus Guardian Service</string>
+    <string name="guardian_notification_channel_name">Focus Guardian Active</string>
+    <string name="guardian_notification_channel_desc">Shows ongoing session status and active focus timer</string>
+    <string name="guardian_notification_title">Focus Mode is Active</string>
+    <string name="guardian_notification_desc">Protecting your focus session</string>
+</resources>
+
