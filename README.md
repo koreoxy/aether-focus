@@ -2,9 +2,9 @@
 
 > **Stay focused. Build your streak. Level up your life.**
 
-Aether Focus is a **focus and digital-wellbeing application** designed to help you stay away from distracting social media and return your attention to what actually matters.
+Aether Focus is a **cyberpunk/retro terminal-themed focus and digital wellbeing application** designed to help you stay away from distracting social media and return your attention to what actually matters.
 
-Instead of simply blocking distractions, Aether Focus turns productivity into a **game** — complete focus challenges, maintain your streak, earn XP, and level up.
+Instead of simply blocking distractions, Aether Focus turns productivity into an interactive **RPG system** — complete focus challenges, maintain your operator streak, earn XP, and level up your character.
 
 <div align="center">
 
@@ -14,34 +14,69 @@ Instead of simply blocking distractions, Aether Focus turns productivity into a 
 
 ---
 
+## 📥 Download & Installation
+
+Ready to deploy the focus engine on your device? You can download the latest pre-compiled Android APK directly from GitHub Releases:
+
+1. **Go to Releases:** Visit the [**GitHub Releases Page**](../../releases) of this repository.
+2. **Download APK:** Download the latest `Aether-Focus-vX.X.X.apk` (or `app-debug.apk`) under the **Assets** section.
+3. **Install on Android:**
+   * Open the downloaded `.apk` file on your Android device.
+   * If prompted, allow installation from **Unknown Sources / Install Unknown Apps** in your Android settings.
+   * Launch **Aether Focus** and execute your first boot sequence!
+
+---
+
 ## 📸 Preview
 
 <div align="center">
-  <img
-    src="https://github.com/user-attachments/assets/6fe872ca-a6c0-4704-b7de-3798ac9c61ef"
-    alt="Aether Focus dashboard"
-    width="360"
-  />
-  <img
-    src="https://github.com/user-attachments/assets/13c69060-a363-40f8-b8ba-72f23cacdf7e"
-    alt="Aether Focus focus challenge interface"
-    width="360"
-  />
+  <table>
+    <tr>
+      <td align="center">
+        <img src="https://github.com/user-attachments/assets/09a9513f-1aec-44a2-8028-a2533981eadc" width="220" alt="Screen 1" />
+      </td>
+      <td align="center">
+        <img src="https://github.com/user-attachments/assets/799b308a-3a3d-401a-ab53-06cfd0224b9e" width="220" alt="Screen 2" />
+      </td>
+      <td align="center">
+        <img src="https://github.com/user-attachments/assets/2c302d24-0e97-40b3-81ca-5ae7f1d5407c" width="220" alt="Screen 3" />
+      </td>
+      <td align="center">
+        <img src="https://github.com/user-attachments/assets/f3777d24-c00f-4398-bbf8-eeeb4beed4e7" width="220" alt="Screen 4" />
+      </td>
+    </tr>
+  </table>
 </div>
+
+---
+
+## ✨ Key Features
+
+* **🖥️ Retro Terminal TUI UI:** Cyberpunk & CRT monitor aesthetic built using custom Design Tokens (`Void Black #050608`, `Phosphor Green #39FF88`, `Cyber Cyan #00E5FF`).
+* **📟 Terminal Boot Sequence:** Simulated TUI OS booting animation on app startup.
+* **🛡️ App & Distraction Interceptor:** Fullscreen overlay intervention to block distracting apps and enforce focus sessions.
+* **💾 Persistent Operator Stats:** Save operator profiles, XP, level progression, and title settings locally using AndroidX DataStore.
+
+---
+
+## 🛠️ Tech Stack & Architecture
+
+* **Language:** Kotlin
+* **UI Framework:** Jetpack Compose (Modern Declarative UI)
+* **Dependency Injection:** Dagger Hilt
+* **Annotation Processing:** KSP (Kotlin Symbol Processing)
+* **Storage:** AndroidX DataStore Preferences
+* **System APIs:** AndroidX Core SplashScreen API
 
 ---
 
 ## 💡 Why Aether Focus?
 
-Social media is designed to keep us scrolling.
+Social media is designed to keep us scrolling. Aether Focus is designed to do the opposite.
 
-Aether Focus is designed to do the opposite.
+When you're working or studying, the app helps you recognize distracting behavior and gives you an intentional reminder to return to your current goal.
 
-When you're working or studying, the app helps you recognize distracting behavior and gives you a small reminder to return to your current goal.
-
-The goal isn't to completely eliminate entertainment.
-
-It's to make **intentional attention** easier.
+The goal isn't to completely eliminate entertainment — it's to make **intentional attention** seamless and rewarding.
 
 ---
 
@@ -49,7 +84,7 @@ It's to make **intentional attention** easier.
 
 > 🚧 **Aether Focus is currently in active development.**
 
-Features, architecture, and UI may change as the project evolves.
+Features, architecture, and UI components are continuously evolving.
 
 ---
 
