@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Void Black (#050608) dari DESIGN.md -->
+    <color name="ic_launcher_background">#050608</color>
+</resources>
