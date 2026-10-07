@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Outer CRT Monitor Frame (Phosphor Green #39FF88) -->
+    <path
+        android:fillColor="#39FF88"
+        android:pathData="M24,24 h60 v60 h-60 z M28,28 v52 h52 v-52 z" />
+
+    <!-- CRT Screen Inner Background (CRT Black #0A0D0F) -->
+    <path
+        android:fillColor="#0A0D0F"
+        android:pathData="M28,28 h52 v52 h-52 z" />
+
+    <!-- CRT Scanlines Texture Lines -->
+    <path
+        android:fillColor="#163223"
+        android:pathData="M28,34 h52 v2 h-52 z M28,42 h52 v2 h-52 z M28,50 h52 v2 h-52 z M28,58 h52 v2 h-52 z M28,66 h52 v2 h-52 z M28,74 h52 v2 h-52 z" />
+
+    <!-- Pixel Art Letter 'A' (Cyber Cyan #00E5FF) -->
+    <!-- Top Cap -->
+    <path
+        android:fillColor="#00E5FF"
+        android:pathData="M48,36 h12 v6 h-12 z" />
+    <!-- Left Leg -->
+    <path
+        android:fillColor="#00E5FF"
+        android:pathData="M42,42 h6 v30 h-6 z" />
+    <!-- Right Leg -->
+    <path
+        android:fillColor="#00E5FF"
+        android:pathData="M60,42 h6 v30 h-6 z" />
+    <!-- Crossbar -->
+    <path
+        android:fillColor="#00E5FF"
+        android:pathData="M48,54 h12 v6 h-12 z" />
+
+    <!-- Terminal Status Indicator Pixel Box (Phosphor Green #39FF88) -->
+    <path
+        android:fillColor="#39FF88"
+        android:pathData="M70,32 h6 v6 h-6 z" />
+
+    <!-- Monitor Base Stand -->
+    <path
+        android:fillColor="#39FF88"
+        android:pathData="M48,84 h12 v4 h-12 z M40,88 h28 v2 h-28 z" />
+</vector>

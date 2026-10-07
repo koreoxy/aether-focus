@@ -84,5 +84,11 @@ dependencies {
 
     // Coroutines
     implementation(libs.kotlinx.coroutines.android)
+
+    // Core Splashscreen API resmi Android
+    implementation("androidx.core:core-splashscreen:1.0.1")
+
+    // Dependensi app lainnya (DataStore, Hilt, Compose, dll)
+    implementation(libs.androidx.datastore.preferences)
 }
 
