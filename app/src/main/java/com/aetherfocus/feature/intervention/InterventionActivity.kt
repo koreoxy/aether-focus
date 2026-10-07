@@ -41,6 +41,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.aetherfocus.core.designsystem.components.CRTScanlines
+import com.aetherfocus.core.designsystem.components.RetroVideoFeed
 import com.aetherfocus.core.designsystem.components.PixelButton
 import com.aetherfocus.core.designsystem.components.PixelButtonVariant
 import com.aetherfocus.core.designsystem.components.TerminalPanel
@@ -58,6 +59,7 @@ import com.aetherfocus.core.designsystem.theme.TextMuted
 import com.aetherfocus.core.designsystem.theme.VoidBlack
 import com.aetherfocus.service.InterventionLauncher
 import dagger.hilt.android.AndroidEntryPoint
+import androidx.compose.runtime.remember
 
 @AndroidEntryPoint
 class InterventionActivity : ComponentActivity() {
@@ -214,35 +216,11 @@ private fun RetroDistractionAlertContent(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(120.dp)
-                            .border(1.dp, TerminalBorderDim, RoundedCornerShape(0.dp))
-                            .background(CrtBlackAlt),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text(
-                                text = "[ ⚠ RADAR FEED ACTIVE ⚠ ]",
-                                style = MaterialTheme.typography.labelSmall,
-                                fontWeight = FontWeight.Bold,
-                                color = PhosphorGreen,
-                                letterSpacing = 1.sp
-                            )
-                            Spacer(modifier = Modifier.height(6.dp))
-                            Text(
-                                text = "> NICE TRY, OPERATOR.",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = CrtWhite
-                            )
-                            Text(
-                                text = "> YOUR FUTURE SELF IS WATCHING.",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = TextMuted
-                            )
-                        }
-                    }
+                    // Animated Video Feed Container
+                    RetroVideoFeed(
+                        targetAppName = blockedAppName,
+                        modifier = Modifier.fillMaxWidth()
+                    )
 
                     Spacer(modifier = Modifier.height(12.dp))
 

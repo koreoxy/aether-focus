@@ -19,6 +19,12 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+import com.aetherfocus.core.model.DistractionBreakdownItem
+import com.aetherfocus.core.model.FocusSession
+import com.aetherfocus.core.model.SessionStats
+import com.aetherfocus.domain.repository.DistractionRepository
+import com.aetherfocus.domain.repository.FocusSessionRepository
+
 data class PermissionState(
     val hasUsageStats: Boolean = false,
     val hasOverlay: Boolean = false,
@@ -32,7 +38,9 @@ data class PermissionState(
 class MainViewModel @Inject constructor(
     private val sessionPreferencesManager: SessionPreferencesManager,
     private val startFocusSessionUseCase: StartFocusSessionUseCase,
-    private val stopFocusSessionUseCase: StopFocusSessionUseCase
+    private val stopFocusSessionUseCase: StopFocusSessionUseCase,
+    private val focusSessionRepository: FocusSessionRepository,
+    private val distractionRepository: DistractionRepository
 ) : ViewModel() {
 
     val sessionPrefs: StateFlow<SessionPreferences> = sessionPreferencesManager.preferencesFlow
@@ -40,6 +48,27 @@ class MainViewModel @Inject constructor(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = SessionPreferences()
+        )
+
+    val sessionStats: StateFlow<SessionStats> = focusSessionRepository.getSessionStatsFlow()
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = SessionStats()
+        )
+
+    val recentSessions: StateFlow<List<FocusSession>> = focusSessionRepository.getRecentCompletedSessions(limit = 5)
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
+
+    val topDistractions: StateFlow<List<DistractionBreakdownItem>> = distractionRepository.getTopDistractingApps(limit = 3)
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
         )
 
     private val _permissionState = MutableStateFlow(PermissionState())

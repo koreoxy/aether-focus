@@ -67,6 +67,8 @@ import com.aetherfocus.core.designsystem.theme.TerminalBorderDim
 import com.aetherfocus.core.designsystem.theme.TextMuted
 import com.aetherfocus.core.designsystem.theme.VoidBlack
 
+import com.aetherfocus.core.designsystem.components.RetroBootOverlay
+
 @Composable
 fun AetherMainScreen(
     viewModel: MainViewModel = hiltViewModel()
@@ -75,6 +77,8 @@ fun AetherMainScreen(
     val lifecycleOwner = LocalLifecycleOwner.current
     val sessionPrefs by viewModel.sessionPrefs.collectAsState()
     val permissionState by viewModel.permissionState.collectAsState()
+
+    var showBootSequence by remember { mutableStateOf(true) }
 
     val notificationLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
@@ -96,6 +100,10 @@ fun AetherMainScreen(
 
     var goalText by remember { mutableStateOf("Build Aether-Focus Core") }
     var selectedDuration by remember { mutableIntStateOf(25) }
+
+    val sessionStats by viewModel.sessionStats.collectAsState()
+    val recentSessions by viewModel.recentSessions.collectAsState()
+    val topDistractions by viewModel.topDistractions.collectAsState()
 
     Scaffold(
         containerColor = VoidBlack
@@ -163,6 +171,16 @@ fun AetherMainScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
+                // Mission Telemetry & Stats (DESIGN.md Section 15 & 20)
+                MissionTelemetryPanel(stats = sessionStats)
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Recent Missions History Log
+                RecentMissionsLogPanel(sessions = recentSessions)
+
+                Spacer(modifier = Modifier.height(16.dp))
+
                 // Blocked Target Matrix
                 BlockedTargetMatrixPanel()
 
@@ -174,6 +192,12 @@ fun AetherMainScreen(
 
             // CRT Scanline Layer (Authentic 1980s Terminal Glow)
             CRTScanlines(scanlineAlpha = 0.07f)
+
+            // Animated Boot Sequence Overlay
+            RetroBootOverlay(
+                isVisible = showBootSequence,
+                onDismiss = { showBootSequence = false }
+            )
         }
     }
 }
@@ -613,5 +637,142 @@ private fun TerminalFooterPrompt() {
             style = MaterialTheme.typography.bodySmall,
             color = PhosphorGreen
         )
+    }
+}
+
+@Composable
+private fun MissionTelemetryPanel(stats: com.aetherfocus.core.model.SessionStats) {
+    TerminalPanel(
+        title = "MISSION TELEMETRY & STATS",
+        borderColor = TerminalBorder,
+        titleColor = CyberCyan
+    ) {
+        Column {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                TelemetryStatBox(
+                    label = "FOCUS TIME",
+                    value = "${stats.totalFocusMinutes} MIN",
+                    color = CyberCyan,
+                    modifier = Modifier.weight(1f)
+                )
+                TelemetryStatBox(
+                    label = "COMPLETED",
+                    value = "${stats.completedSessionsCount} MISSIONS",
+                    color = PhosphorGreen,
+                    modifier = Modifier.weight(1f)
+                )
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                TelemetryStatBox(
+                    label = "DISTRACTIONS",
+                    value = "${stats.totalDistractionsCount} SHIELDED",
+                    color = CrtRed,
+                    modifier = Modifier.weight(1f)
+                )
+                TelemetryStatBox(
+                    label = "STREAK",
+                    value = "${stats.currentStreakDays} DAYS",
+                    color = com.aetherfocus.core.designsystem.theme.CyberPurple,
+                    modifier = Modifier.weight(1f)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun TelemetryStatBox(
+    label: String,
+    value: String,
+    color: androidx.compose.ui.graphics.Color,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .border(1.dp, TerminalBorderDim, RoundedCornerShape(0.dp))
+            .background(CrtBlackAlt)
+            .padding(vertical = 10.dp, horizontal = 10.dp)
+    ) {
+        Column {
+            Text(
+                text = "> $label",
+                style = MaterialTheme.typography.labelSmall,
+                color = TextMuted,
+                fontSize = 9.sp
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = value,
+                style = MaterialTheme.typography.labelMedium,
+                fontWeight = FontWeight.Bold,
+                color = color,
+                fontSize = 12.sp
+            )
+        }
+    }
+}
+
+@Composable
+private fun RecentMissionsLogPanel(sessions: List<com.aetherfocus.core.model.FocusSession>) {
+    TerminalPanel(
+        title = "RECENT MISSION LOGS",
+        borderColor = TerminalBorder,
+        titleColor = PhosphorGreen
+    ) {
+        Column {
+            if (sessions.isEmpty()) {
+                Text(
+                    text = "> SEARCHING LOCAL MISSION DATABASE...",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = TextMuted
+                )
+                Text(
+                    text = "> NO COMPLETED MISSIONS LOGGED YET.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = TextMuted
+                )
+            } else {
+                sessions.forEach { session ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .border(1.dp, TerminalBorderDim, RoundedCornerShape(0.dp))
+                            .background(CrtBlackAlt)
+                            .padding(8.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = "● ${session.goalTitle.uppercase()}",
+                                style = MaterialTheme.typography.labelSmall,
+                                fontWeight = FontWeight.Bold,
+                                color = CrtWhite
+                            )
+                            Text(
+                                text = "> ${session.actualDurationSeconds / 60}m focused • ${session.distractionCount} distractions",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = TextMuted,
+                                fontSize = 10.sp
+                            )
+                        }
+                        Text(
+                            text = "[ DONE ]",
+                            style = MaterialTheme.typography.labelSmall,
+                            fontWeight = FontWeight.Bold,
+                            color = PhosphorGreen
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(6.dp))
+                }
+            }
+        }
     }
 }
