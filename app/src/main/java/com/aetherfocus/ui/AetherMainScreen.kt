@@ -8,34 +8,16 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
@@ -47,27 +29,14 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import com.aetherfocus.core.designsystem.theme.*
+import com.aetherfocus.core.designsystem.components.*
+import com.aetherfocus.feature.profile.CharacterProfileScreen
 import com.aetherfocus.core.common.PermissionUtils
-import com.aetherfocus.core.designsystem.components.CRTScanlines
-import com.aetherfocus.core.designsystem.components.PixelButton
-import com.aetherfocus.core.designsystem.components.PixelButtonVariant
-import com.aetherfocus.core.designsystem.components.StatusIndicator
-import com.aetherfocus.core.designsystem.components.SystemStatusType
-import com.aetherfocus.core.designsystem.components.TerminalPanel
-import com.aetherfocus.core.designsystem.components.TerminalProgressBar
-import com.aetherfocus.core.designsystem.theme.CrtBlack
-import com.aetherfocus.core.designsystem.theme.CrtBlackAlt
-import com.aetherfocus.core.designsystem.theme.CrtRed
-import com.aetherfocus.core.designsystem.theme.CrtWhite
-import com.aetherfocus.core.designsystem.theme.CyberCyan
-import com.aetherfocus.core.designsystem.theme.PhosphorGreen
-import com.aetherfocus.core.designsystem.theme.TerminalAmber
-import com.aetherfocus.core.designsystem.theme.TerminalBorder
-import com.aetherfocus.core.designsystem.theme.TerminalBorderDim
-import com.aetherfocus.core.designsystem.theme.TextMuted
-import com.aetherfocus.core.designsystem.theme.VoidBlack
 
-import com.aetherfocus.core.designsystem.components.RetroBootOverlay
+enum class NavigationTab {
+    TERMINAL, PROFILE
+}
 
 @Composable
 fun AetherMainScreen(
@@ -79,6 +48,7 @@ fun AetherMainScreen(
     val permissionState by viewModel.permissionState.collectAsState()
 
     var showBootSequence by remember { mutableStateOf(true) }
+    var currentTab by remember { mutableStateOf(NavigationTab.TERMINAL) }
 
     val notificationLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
@@ -113,92 +83,162 @@ fun AetherMainScreen(
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            // Main Terminal Scroll Content
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
-                    .padding(horizontal = 16.dp, vertical = 20.dp)
-            ) {
-                // OS Header
-                TerminalOSHeader(isFocusActive = sessionPrefs.isFocusActive)
+            Column(modifier = Modifier.fillMaxSize()) {
+                // Cyber Tab Bar Header
+                CyberTabBar(
+                    selectedTab = currentTab,
+                    onTabSelected = { currentTab = it }
+                )
 
-                Spacer(modifier = Modifier.height(16.dp))
+                when (currentTab) {
+                    NavigationTab.TERMINAL -> {
+                        // Main Terminal Content
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .verticalScroll(rememberScrollState())
+                                .padding(horizontal = 16.dp, vertical = 16.dp)
+                        ) {
+                            TerminalOSHeader(isFocusActive = sessionPrefs.isFocusActive)
 
-                // Diagnostic Protocols Panel (if any permission is missing)
-                AnimatedVisibility(visible = !permissionState.allGranted) {
-                    Column {
-                        PermissionProtocolsPanel(
-                            permissionState = permissionState,
-                            onRequestUsageAccess = {
-                                context.startActivity(PermissionUtils.createUsageStatsSettingsIntent())
-                            },
-                            onRequestOverlay = {
-                                context.startActivity(PermissionUtils.createOverlaySettingsIntent(context))
-                            },
-                            onRequestNotification = {
-                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                                    notificationLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                            Spacer(modifier = Modifier.height(16.dp))
+
+                            AnimatedVisibility(visible = !permissionState.allGranted) {
+                                Column {
+                                    PermissionProtocolsPanel(
+                                        permissionState = permissionState,
+                                        onRequestUsageAccess = {
+                                            context.startActivity(PermissionUtils.createUsageStatsSettingsIntent())
+                                        },
+                                        onRequestOverlay = {
+                                            context.startActivity(PermissionUtils.createOverlaySettingsIntent(context))
+                                        },
+                                        onRequestNotification = {
+                                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                                                notificationLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                                            }
+                                        }
+                                    )
+                                    Spacer(modifier = Modifier.height(16.dp))
                                 }
                             }
+
+                            if (sessionPrefs.isFocusActive) {
+                                ActiveFocusCorePanel(
+                                    goalTitle = sessionPrefs.activeGoalTitle,
+                                    startTime = sessionPrefs.sessionStartTime,
+                                    targetMinutes = sessionPrefs.sessionTargetDurationMinutes,
+                                    onAbortClicked = {
+                                        viewModel.stopSession(context)
+                                    }
+                                )
+                            } else {
+                                MissionSetupPanel(
+                                    goal = goalText,
+                                    onGoalChange = { goalText = it },
+                                    selectedDuration = selectedDuration,
+                                    onDurationSelected = { selectedDuration = it },
+                                    isStartEnabled = permissionState.allGranted,
+                                    onStartClicked = {
+                                        viewModel.startSession(context, goalText, selectedDuration)
+                                    }
+                                )
+                            }
+
+                            Spacer(modifier = Modifier.height(16.dp))
+
+                            MissionTelemetryPanel(stats = sessionStats)
+
+                            Spacer(modifier = Modifier.height(16.dp))
+
+                            RecentMissionsLogPanel(sessions = recentSessions)
+
+                            Spacer(modifier = Modifier.height(16.dp))
+
+                            BlockedTargetMatrixPanel()
+
+                            Spacer(modifier = Modifier.height(16.dp))
+
+                            TerminalFooterPrompt()
+                        }
+                    }
+
+                    NavigationTab.PROFILE -> {
+                        CharacterProfileScreen(
+                            totalFocusHours = (sessionStats.totalFocusMinutes / 60f),
+                            focusStreakDays = sessionStats.currentStreakDays,
+                            completedMissionsCount = sessionStats.completedSessionsCount
                         )
-                        Spacer(modifier = Modifier.height(16.dp))
                     }
                 }
-
-                // Main Focus Core Terminal: Active vs Setup
-                if (sessionPrefs.isFocusActive) {
-                    ActiveFocusCorePanel(
-                        goalTitle = sessionPrefs.activeGoalTitle,
-                        startTime = sessionPrefs.sessionStartTime,
-                        targetMinutes = sessionPrefs.sessionTargetDurationMinutes,
-                        onAbortClicked = {
-                            viewModel.stopSession(context)
-                        }
-                    )
-                } else {
-                    MissionSetupPanel(
-                        goal = goalText,
-                        onGoalChange = { goalText = it },
-                        selectedDuration = selectedDuration,
-                        onDurationSelected = { selectedDuration = it },
-                        isStartEnabled = permissionState.allGranted,
-                        onStartClicked = {
-                            viewModel.startSession(context, goalText, selectedDuration)
-                        }
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // Mission Telemetry & Stats (DESIGN.md Section 15 & 20)
-                MissionTelemetryPanel(stats = sessionStats)
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // Recent Missions History Log
-                RecentMissionsLogPanel(sessions = recentSessions)
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // Blocked Target Matrix
-                BlockedTargetMatrixPanel()
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // Terminal Command Prompt / Footer
-                TerminalFooterPrompt()
             }
 
-            // CRT Scanline Layer (Authentic 1980s Terminal Glow)
             CRTScanlines(scanlineAlpha = 0.07f)
 
-            // Animated Boot Sequence Overlay
             RetroBootOverlay(
                 isVisible = showBootSequence,
                 onDismiss = { showBootSequence = false }
             )
         }
+    }
+}
+
+@Composable
+private fun CyberTabBar(
+    selectedTab: NavigationTab,
+    onTabSelected: (NavigationTab) -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(CrtBlack)
+            .border(1.dp, TerminalBorderDim, RoundedCornerShape(0.dp))
+            .padding(4.dp)
+    ) {
+        TabItem(
+            label = "[01] TERMINAL CORE",
+            isSelected = selectedTab == NavigationTab.TERMINAL,
+            onClick = { onTabSelected(NavigationTab.TERMINAL) },
+            modifier = Modifier.weight(1f)
+        )
+
+        Spacer(modifier = Modifier.width(4.dp))
+
+        TabItem(
+            label = "[02] GUARDIAN PROFILE",
+            isSelected = selectedTab == NavigationTab.PROFILE,
+            onClick = { onTabSelected(NavigationTab.PROFILE) },
+            modifier = Modifier.weight(1f)
+        )
+    }
+}
+
+@Composable
+private fun TabItem(
+    label: String,
+    isSelected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .border(
+                1.dp,
+                if (isSelected) PhosphorGreen else TerminalBorderDim,
+                RoundedCornerShape(0.dp)
+            )
+            .background(if (isSelected) PhosphorGreen.copy(alpha = 0.15f) else CrtBlackAlt)
+            .clickable { onClick() }
+            .padding(vertical = 10.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = label,
+            style = MaterialTheme.typography.labelSmall,
+            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+            color = if (isSelected) PhosphorGreen else TextMuted,
+            letterSpacing = 1.sp
+        )
     }
 }
 
@@ -285,7 +325,6 @@ private fun PermissionProtocolsPanel(
                 modifier = Modifier.padding(vertical = 6.dp)
             )
 
-            // Usage Stats Protocol
             ProtocolRow(
                 index = "01",
                 name = "USAGE ACCESS STATS",
@@ -295,7 +334,6 @@ private fun PermissionProtocolsPanel(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Overlay Protocol
             ProtocolRow(
                 index = "02",
                 name = "DISPLAY OVERLAY ENGINE",
@@ -389,7 +427,6 @@ private fun MissionSetupPanel(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Retro Terminal Input Box
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -430,7 +467,6 @@ private fun MissionSetupPanel(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Duration Selector Buttons
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -462,7 +498,6 @@ private fun MissionSetupPanel(
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            // Execute Button
             PixelButton(
                 text = if (isStartEnabled) "INITIALIZE FOCUS CORE" else "PERMISSIONS REQUIRED",
                 onClick = onStartClicked,
@@ -509,7 +544,6 @@ private fun ActiveFocusCorePanel(
 
             Spacer(modifier = Modifier.height(14.dp))
 
-            // Giant Monospace Terminal Timer Box
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -537,7 +571,6 @@ private fun ActiveFocusCorePanel(
 
             Spacer(modifier = Modifier.height(14.dp))
 
-            // Terminal ASCII Block Progress
             TerminalProgressBar(
                 progress = progress,
                 modifier = Modifier.fillMaxWidth(),
@@ -555,7 +588,6 @@ private fun ActiveFocusCorePanel(
 
             Spacer(modifier = Modifier.height(18.dp))
 
-            // Abort Mission Button
             PixelButton(
                 text = "ABORT MISSION",
                 onClick = onAbortClicked,
@@ -679,7 +711,7 @@ private fun MissionTelemetryPanel(stats: com.aetherfocus.core.model.SessionStats
                 TelemetryStatBox(
                     label = "STREAK",
                     value = "${stats.currentStreakDays} DAYS",
-                    color = com.aetherfocus.core.designsystem.theme.CyberPurple,
+                    color = CyberPurple,
                     modifier = Modifier.weight(1f)
                 )
             }
@@ -691,7 +723,7 @@ private fun MissionTelemetryPanel(stats: com.aetherfocus.core.model.SessionStats
 private fun TelemetryStatBox(
     label: String,
     value: String,
-    color: androidx.compose.ui.graphics.Color,
+    color: Color,
     modifier: Modifier = Modifier
 ) {
     Box(
